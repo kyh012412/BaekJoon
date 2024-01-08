@@ -18,9 +18,10 @@ public class Main {
 			long more =n;
 			long stamp=n;
 			while(stamp>=k) {
-				stamp++;
-				stamp-=k;
-				more++;
+				long round = stamp/k;
+				stamp+=round;
+				stamp-=k*round;
+				more+=round;
 			}
 			sb.append(more+"\n");
 		}
