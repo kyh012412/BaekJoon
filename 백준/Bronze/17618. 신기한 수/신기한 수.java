@@ -16,10 +16,9 @@ public class Main {
 		
 		for(int i=1;i<=n;i++) {
 			String s = i+"";
-			String v[] = s.split("");
 			int temp=0;
-			for(int j=0;j<v.length;j++) {
-				temp+=Integer.parseInt(v[j]);
+			for(int j=0;j<s.length();j++) {
+				temp+= s.charAt(j)-'0';
 			}
 			if(i%temp==0) {
 				ans++;
