@@ -1,92 +1,75 @@
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
+import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.util.ArrayList;
-import java.util.Deque;
-import java.util.LinkedList;
 import java.util.StringTokenizer;
 
+
 public class Main {
-
-    public static StringBuilder sb = new StringBuilder();
-    public static StringTokenizer st;
-
-    public static ArrayList<Integer> order[];
-    public static int[] time;
-    public static int[] waittime;
-    public static int[] finishtime;
-
-    public static int[] end;
-    public static int n,k;
-    public static int target;
-
-    public static void main(String[] args) throws Exception {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
-
-        int tc = Integer.parseInt(br.readLine());
-
-        while(tc-->0) {
-
-            st = new StringTokenizer(br.readLine());
-
-            n = Integer.parseInt(st.nextToken());
-            k = Integer.parseInt(st.nextToken());
-
-            order = new ArrayList[n+1];
-            end = new int[n+1];
-            time = new int[n+1];
-            waittime = new int[n+1];
-            finishtime = new int[n+1];
-
-            for(int i=1;i<n+1;i++) {
-                order[i] = new ArrayList<Integer>();
-            }
-
-            st = new StringTokenizer(br.readLine());
-            for(int i=1;i<n+1;i++) {
-                time[i]=Integer.parseInt(st.nextToken());
-            }
-
-            int s,e;
-
-            while(k-->0) {
-                st = new StringTokenizer(br.readLine());
-                s = Integer.parseInt(st.nextToken());
-                e = Integer.parseInt(st.nextToken());
-                order[s].add(e);
-                end[e]++;
-            }
-
-            target = Integer.parseInt(br.readLine());
-
-            Deque<Integer> dq = new LinkedList<Integer>();
-
-            for(int i=1;i<n+1;i++) {
-                if(end[i]==0) {
-                    dq.addLast(i);
+    public static void main(String[] args) {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+        try {
+            int T = Integer.parseInt(reader.readLine());
+            // T가 0이 아닐 때
+            for (int i = 0; i < T; i++) {
+                StringTokenizer st = new StringTokenizer(reader.readLine());
+                // 건물의 개수 N
+                int N = Integer.parseInt(st.nextToken());
+                // 규칙의 개수 K
+                int K = Integer.parseInt(st.nextToken());
+                st = new StringTokenizer(reader.readLine());
+                int count = st.countTokens();
+                Building[] buildings = new Building[count];
+                for (int j = 0; j < count; j++) {
+                    buildings[j] = (new Building(Integer.parseInt(st.nextToken())));
                 }
-            }
-
-            while(!dq.isEmpty()) {
-                int first = dq.pollFirst(); //앞과목 
-                finishtime[first] = time[first]+waittime[first];
-                if(first==target) {break;}
-//          int newValue = value[first]+1; //뒷과목을 들을수 있는 학기
-                for(int second : order[first]) { //뒷과목
-                    end[second]--;
-                    waittime[second] = Math.max(waittime[second],finishtime[first]);
-                    if(end[second]==0) {
-                        dq.add(second);
-                    }
+                // 규칙의 개수만큼 연산하기
+                for (int j = 0; j < K; j++) {
+                    st = new StringTokenizer(reader.readLine());
+                    int startB = Integer.parseInt(st.nextToken()) - 1;
+                    int arriveB = Integer.parseInt(st.nextToken()) - 1;
+                    buildings[arriveB].put(buildings[startB]);
                 }
+                int resultB = Integer.parseInt(reader.readLine()) - 1;
+                System.out.println(buildings[resultB].getSec());
             }
-
-            bw.write(finishtime[target]+"\n");
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                reader.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
+    }
+}
 
-        bw.close();
-        br.close();
+class Building {
+    // 기본 건설 시간
+    int sec;
+    // 해당 건물을 짓기 위해 필요한 건물들
+    ArrayList<Building> bList;
+    int total = -1;
+
+    public Building(int sec) {
+        this.sec = sec;
+        this.bList = new ArrayList<>();
+    }
+
+    public int getSec() {
+        if (total != -1) {
+            return total;
+        }
+        int s = 0;
+        for (Building b : bList) {
+            s = Math.max(b.getSec(), s);
+        }
+        total = sec + s;
+        return total;
+    }
+
+    public void put(Building building) {
+        bList.add(building);
     }
 }
